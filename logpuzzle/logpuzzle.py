@@ -18,7 +18,11 @@ Given an apache logfile, find the puzzle urls and download the images.
 Here's what a puzzle url looks like:
 10.254.254.28 - - [06/Aug/2007:00:13:48 -0700] "GET /~foo/puzzle-bar-aaab.jpg HTTP/1.0" 302 528 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
 """
-
+def sort_urls(urlpath):
+    match = re.search('-(\w+)-(\w+).jpg', urlpath)
+    if match:
+        return match.group(2)
+    return urlpath
 
 def read_urls(filename):
     """
@@ -39,7 +43,7 @@ def read_urls(filename):
         if baseurl+path not in uniquePaths:
             uniquePaths.append(baseurl+path)
     
-    return sorted(uniquePaths)
+    return sorted(uniquePaths, key=sort_urls)
 
 def download_images(img_urls, dest_dir):
     """
@@ -50,21 +54,22 @@ def download_images(img_urls, dest_dir):
     with an img tag to show each local image file.
     Creates the directory if necessary.
     """
-    if not os.path.exists(dest_dir):
-        os.makedirs(dest_dir)
+    absolute_dest_dir = os.path.abspath(dest_dir)
+    if not os.path.exists(absolute_dest_dir):
+        os.makedirs(absolute_dest_dir)
     
     index = 0
     imagePaths = []
     for img_url in img_urls:
         print 'Retrieving: ', img_url
-        imagePath = os.path.abspath(os.path.join(dest_dir, 'img' + index))
+        imagePath = os.path.abspath(os.path.join(dest_dir, 'img' + str(index)))
         imagePaths.append(imagePath)
         urllib.urlretrieve(img_url, imagePath)
         index += 1
         
-    f = open(os.path.abspath(os.path.join(dest_dir,'index.html'), 'w')
-    
-    f.write('<verbatim>\n <html> \n <body>' + ''.join(['<img src="' + imagePath + '"/>'  imagePath in imagePaths]) + '</body></html>')
+    f = open(os.path.abspath(os.path.join(dest_dir,'index.html')), 'w')
+    f.write('<verbatim>\n <html> \n <body>\n' + ''.join(['<img src="' + imagePath + '"/>'  for imagePath in imagePaths]) + '</body>\n</html>')
+    f.close()
     
 
 def main():
