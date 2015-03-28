@@ -3,7 +3,6 @@
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
 from string import lower
-from audioop import reverse
 
 # Google's Python Class
 # http://code.google.com/edu/languages/google-python-class/
