@@ -6,8 +6,6 @@ Created on Mar 28, 2015
 import random
 from urllib import urlopen
 import sys
-from gi.overrides.keysyms import question
-from twisted.protocols.amp import ANSWER
 
 WORD_URL = 'http://learncodethehardway.org/words.txt'
 WORDS = []
